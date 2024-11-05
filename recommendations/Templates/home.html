@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommender System</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: white;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            position: relative; /* Position relative for absolute positioning of buttons */
+        }
+        h1 {
+            color: #ffcc00;
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+        h4 {
+            color: white;
+            margin-bottom: 20px;
+        }
+        .movie-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff9933;
+            margin: 0 15px; /* Added margin for spacing between movie texts */
+        }
+        select, button {
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #ffcc00;
+            color: black;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        select:hover, button:hover {
+            background-color: #ff9933;
+            color: white;
+        }
+        .recommendations, .dissimilar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            gap: 20px; /* Increase space between movie texts */
+            margin-top: 20px; /* Add spacing above recommendations */
+        }
+        .vertical {
+            flex-direction: column; /* Stack items vertically */
+        }
+        hr {
+            border: 1px solid #ff9933; /* Change color of horizontal line */
+            margin: 20px 0; /* Space above and below horizontal line */
+        }
+        .toggle-buttons {
+            position: absolute; /* Positioning to the top-right corner */
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px; /* Space between buttons */
+        }
+        .toggle-buttons button {
+            font-size: 14px; /* Smaller font size */
+            padding: 5px 10px; /* Smaller padding */
+        }
+        
+    </style>
+    <script>
+        function toggleDisplay(displayType) {
+            const recommendationContainer = document.getElementById('recommendation-container');
+            const dissimilarContainer = document.getElementById('dissimilar-container');
+
+            if (displayType === 'vertical') {
+                recommendationContainer.classList.add('vertical');
+                dissimilarContainer.classList.add('vertical');
+            } else {
+                recommendationContainer.classList.remove('vertical');
+                dissimilarContainer.classList.remove('vertical');
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>🎥 Movie Recommender System</h1>
+    <h4>Explore personalized movie recommendations based on your choice.</h4>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <select name="selected_movie">
+            {% for movie in movies %}
+                <option value="{{ movie }}" {% if movie == selected_movie %}selected{% endif %}>{{ movie }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <button type="submit" name="recommend">🚀 Get Recommendations</button>
+        <button type="submit" name="dissimilar">🚫 Get Dissimilar Movies</button>
+    </form>
+
+    <div class="toggle-buttons">
+        <button type="button" onclick="toggleDisplay('horizontal')">🌐 Horizontal</button>
+        <button type="button" onclick="toggleDisplay('vertical')">📐 Vertical</button>
+    </div>
+
+    {% if recommendations %}
+        <hr>
+        <h2>Top 5 Movie Recommendations for "{{ selected_movie }}" 🎬:</h2>
+        <div class="recommendations" id="recommendation-container">
+            {% for recommendation in recommendations %}
+                <div class="movie-text">🎬 {{ recommendation }}</div>
+            {% endfor %}
+        </div>
+        <hr>
+    {% endif %}
+
+    {% if dissimilar_movies %}
+        <hr>
+        <h2>Top 5 Dissimilar Movies for "{{ selected_movie }}" 🎥:</h2>
+        <div class="dissimilar" id="dissimilar-container">
+            {% for movie in dissimilar_movies %}
+                <div class="movie-text">🚫 {{ movie }}</div>
+            {% endfor %}
+        </div>
+        <hr>
+    {% endif %}
+    
+    <h6>Made by Vibhav Ahuja.</h6>
+</body>
+</html>
+
